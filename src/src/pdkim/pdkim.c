@@ -562,11 +562,13 @@ for (uschar * p = raw_hdr; ; p++)
 	  case 'v':					/* version */
 	      /* We only support version 1, and that is currently the
 		 only version there is. */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->version =
 	      Ustrcmp(cur_val->s, PDKIM_SIGNATURE_VERSION) == 0 ? 1 : -1;
 	    break;
 	  case 'a':					/* algorithm */
 	    {
+	    if (cur_tag->s[1] != '\0') break;
 	    const uschar * list = cur_val->s;
 	    int sep = '-';
 	    uschar * elem;
@@ -580,10 +582,12 @@ for (uschar * p = raw_hdr; ; p++)
 	    }
 
 	  case 'c':					/* canonicalization */
+	    if (cur_tag->s[1] != '\0')  break;
 	    pdkim_cstring_to_canons(cur_val->s, 0,
 				    &sig->canon_headers, &sig->canon_body);
 	    break;
 	  case 'q':				/* Query method (for pubkey)*/
+	    if (cur_tag->s[1] != '\0') break;
 	    for (int i = 0; pdkim_querymethods[i]; i++)
 	      if (Ustrcmp(cur_val->s, pdkim_querymethods[i]) == 0)
 	        {
@@ -592,20 +596,28 @@ for (uschar * p = raw_hdr; ; p++)
 		}
 	    break;
 	  case 's':					/* Selector */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->selector = string_copyn(cur_val->s, cur_val->ptr); break;
 	  case 'd':					/* SDID */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->domain = string_copyn(cur_val->s, cur_val->ptr); break;
 	  case 'i':					/* AUID */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->identity = pdkim_decode_qp(cur_val->s); break;
 	  case 't':					/* Timestamp */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->created = strtoul(CS cur_val->s, NULL, 10); break;
 	  case 'x':					/* Expiration */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->expires = strtoul(CS cur_val->s, NULL, 10); break;
 	  case 'l':					/* Body length count */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->bodylength = strtol(CS cur_val->s, NULL, 10); break;
 	  case 'h':					/* signed header fields */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->headernames = string_copyn(cur_val->s, cur_val->ptr); break;
 	  case 'z':					/* Copied headfields */
+	    if (cur_tag->s[1] != '\0') break;
 	    sig->copiedheaders = pdkim_decode_qp(cur_val->s); break;
 /*XXX draft-ietf-dcrup-dkim-crypto-05 would need 'p' tag support
 for rsafp signatures.  But later discussion is dropping those. */
